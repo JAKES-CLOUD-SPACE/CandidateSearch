@@ -22,6 +22,7 @@ const CandidateSearch = () => {
         // Step 2: Fetch full details for each candidate
         const fullDetailsPromises = fetchedCandidates.map(async (candidate: Candidate) => {
           const details = await searchGithubUser(candidate.login);
+          console.log(details);
           return details || null; // Handle case if user details are missing
         });
         
@@ -88,6 +89,7 @@ const CandidateSearch = () => {
         <p>No more candidates available</p>
       ) : (
         <div>
+          <h1>Candidate Search</h1>
           <div>
             <img
               src={currentCandidate?.avatar_url}
