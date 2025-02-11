@@ -118,3 +118,49 @@ tbody tr:nth-child(odd) {
   width: 80vw;
   table-layout: fixed;
 }
+
+.saved-candidates {
+  margin: 20px;
+}
+
+.saved-candidates h1 {
+  text-align: center;
+}
+
+.candidates-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.candidates-table th,
+.candidates-table td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.candidates-table th {
+  background-color: #003278;
+}
+
+.candidates-table tr:nth-child(even) {
+  background-color: #003278;
+}
+
+.candidates-table img {
+  border-radius: 50%;
+}
+
+button {
+  padding: 5px 10px;
+  background-color: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+button:hover {
+  background-color: darkred;
+}
