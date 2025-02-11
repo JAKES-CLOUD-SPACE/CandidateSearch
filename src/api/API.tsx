@@ -1,9 +1,9 @@
 const searchGithub = async () => {
   try {
     const start = Math.floor(Math.random() * 100000000) + 1;
-  console.log('GitHub Token:', import.meta.env.VITE_GITHUB_TOKEN);
+  //console.log('GitHub Token:', import.meta.env.VITE_GITHUB_TOKEN);
 
-     console.log(import.meta.env.VITE_GITHUB_TOKEN);
+     //console.log(import.meta.env.VITE_GITHUB_TOKEN);
     const response = await fetch(
       `https://api.github.com/users?since=${start}`,
       {

@@ -7,15 +7,34 @@ const CandidateSearch = () => {
   const [currentCandidateIndex, setCurrentCandidateIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [savedCandidates, setSavedCandidates] = useState<Candidate[]>([]);
-  const [currentCandidateDetails, setCurrentCandidateDetails] = useState<Candidate | null>(null);
+  const [fullCandidateDetails, setFullCandidateDetails] = useState<Candidate[]>([]); // Store full candidate details
 
   // Fetch a list of candidates (page of users)
   useEffect(() => {
     const fetchCandidates = async () => {
       setLoading(true);
-      const fetchedCandidates = await searchGithub();
-      setCandidates(fetchedCandidates);
-      setLoading(false);
+
+      try {
+        // Step 1: Fetch basic candidate list
+        const fetchedCandidates = await searchGithub();
+        setCandidates(fetchedCandidates);
+
+        // Step 2: Fetch full details for each candidate
+        const fullDetailsPromises = fetchedCandidates.map(async (candidate: Candidate) => {
+          const details = await searchGithubUser(candidate.login);
+          return details || null; // Handle case if user details are missing
+        });
+        
+        // Step 3: Wait for all full details to be fetched
+        const fullDetails = await Promise.all(fullDetailsPromises);
+
+        // Step 4: Update state with full candidate details
+        setFullCandidateDetails(fullDetails);
+      } catch (error) {
+        console.error('Error fetching candidates:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchCandidates();
@@ -37,7 +56,6 @@ const CandidateSearch = () => {
         const userDetails = await searchGithubUser(currentCandidate.login);
         //console.log('User details:', userDetails);
         // Add user details to the saved candidates
-        setCurrentCandidateDetails(userDetails);
         
         if (userDetails) {
         const updatedSavedCandidates = [...savedCandidates, userDetails];
@@ -60,6 +78,7 @@ const CandidateSearch = () => {
   };
 
   const currentCandidate = candidates[currentCandidateIndex];
+  const currentFullDetails = fullCandidateDetails[currentCandidateIndex];
 
   return (
     <div>
@@ -77,15 +96,17 @@ const CandidateSearch = () => {
               height={250}
               />
               <h2>{currentCandidate?.login}</h2>
-            {currentCandidateDetails && (
+              {currentFullDetails ? (
               <div>
-                <p><strong>GitHub Profile:</strong> <a href={currentCandidate?.html_url} target="_blank" rel="noopener noreferrer">Profile Link</a></p>
-                <p><strong>Location:</strong> {currentCandidateDetails.location || 'N/A'}</p>
-                <p><strong>Email:</strong> {currentCandidateDetails.email || 'N/A'}</p>
-                <p><strong>Company:</strong> {currentCandidateDetails.company || 'N/A'}</p>
-                <p><strong>Bio:</strong> {currentCandidateDetails.bio || 'N/A'}</p>
+                <p><strong>Location:</strong> {currentFullDetails.location || 'N/A'}</p>
+                <p><strong>Email:</strong> {currentFullDetails.email || 'N/A'}</p>
+                <p><strong>GitHub Profile:</strong> <a href={currentFullDetails.html_url} target="_blank" rel="noopener noreferrer">Profile Link</a></p>
+                <p><strong>Company:</strong> {currentFullDetails.company || 'N/A'}</p>
+                <p><strong>Bio:</strong> {currentFullDetails.bio || 'N/A'}</p>
               </div>
-            )}
+              ) : (
+                <p>No full details available</p>
+              )}
             <div>
               <button onClick={handleSaveCandidate}>Save Candidate (+)</button>
               <button onClick={handleSkipCandidate}>Skip Candidate (-)</button>
