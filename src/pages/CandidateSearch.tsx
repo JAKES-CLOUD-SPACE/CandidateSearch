@@ -7,6 +7,7 @@ const CandidateSearch = () => {
   const [currentCandidateIndex, setCurrentCandidateIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [savedCandidates, setSavedCandidates] = useState<Candidate[]>([]);
+  const [currentCandidateDetails, setCurrentCandidateDetails] = useState<Candidate | null>(null);
 
   // Fetch a list of candidates (page of users)
   useEffect(() => {
@@ -34,8 +35,10 @@ const CandidateSearch = () => {
     if (currentCandidate) {
       try {
         const userDetails = await searchGithubUser(currentCandidate.login);
-        console.log('User details:', userDetails);
+        //console.log('User details:', userDetails);
         // Add user details to the saved candidates
+        setCurrentCandidateDetails(userDetails);
+        
         if (userDetails) {
         const updatedSavedCandidates = [...savedCandidates, userDetails];
         setSavedCandidates(updatedSavedCandidates);
@@ -74,15 +77,19 @@ const CandidateSearch = () => {
               height={250}
               />
               <h2>{currentCandidate?.login}</h2>
-            <p><strong>Location:</strong> {currentCandidate?.location || 'N/A'}</p>
-            <p><strong>Email:</strong> {currentCandidate?.email || 'N/A'}</p>
-            <p><strong>GitHub Profile:</strong> <a href={currentCandidate?.html_url} target="_blank" rel="noopener noreferrer">Profile Link</a></p>
-            <p><strong>Company:</strong> {currentCandidate?.company || 'N/A'}</p>
-            <p><strong>Bio:</strong> {currentCandidate?.bio || 'N/A'}</p>
-          </div>
-          <div>
-            <button onClick={handleSaveCandidate}>Save Candidate (+)</button>
-            <button onClick={handleSkipCandidate}>Skip Candidate (-)</button>
+            {currentCandidateDetails && (
+              <div>
+                <p><strong>GitHub Profile:</strong> <a href={currentCandidate?.html_url} target="_blank" rel="noopener noreferrer">Profile Link</a></p>
+                <p><strong>Location:</strong> {currentCandidateDetails.location || 'N/A'}</p>
+                <p><strong>Email:</strong> {currentCandidateDetails.email || 'N/A'}</p>
+                <p><strong>Company:</strong> {currentCandidateDetails.company || 'N/A'}</p>
+                <p><strong>Bio:</strong> {currentCandidateDetails.bio || 'N/A'}</p>
+              </div>
+            )}
+            <div>
+              <button onClick={handleSaveCandidate}>Save Candidate (+)</button>
+              <button onClick={handleSkipCandidate}>Skip Candidate (-)</button>
+            </div>
           </div>
         </div>
       )}
